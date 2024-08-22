@@ -1,69 +1,77 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
-const Login = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSignUp = () => {
-    router.push("/login");
-  };
+  // function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+  //   e.preventDefault();
+  //   fetch("/server/login", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ email, password }),
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data.message === "Login successful") {
+  //         window.location.href = "/";
+  //       } else {
+  //         alert(data.message);
+  //       }
+  //     });
+  // }
+
+  // function googleSignIn() {
+  //   signIn("google", { callbackUrl: "/" });
+  // }
+
+  function redirectSignUp() {
+    window.location.href = "/signup";
+  }
 
   return (
-    <div className="mt-20 text-center ">
-      <h1 className="text-2xl text-center">Sign In</h1>
-
-      <form className="mt-10 pt-10 w-1/2 mx-auto text-center border shadow flex flex-col gap-7">
-        <label>
-          <span>Email</span>
-          <input
-            type="email"
-            placeholder="Enter your Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="p-2  bg-white rounded-lg border border-gray-400 ml-10"
-          />
-        </label>
-        <label>
-          <span className="pr-2">Password</span>
-          <input
-            type="password"
-            placeholder="Enter your Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="p-2 bg-white rounded-lg border border-gray-400"
-          />
-        </label>
-
-        <div className="flex-end mx-3 mb-5 gap-4">
-          <button
-            className="px-5 py-1.5 text-sm bg-primary-orange rounded bg-blue-500 text-white"
-            type="submit"
-          >
-            Sign In
-          </button>
-        </div>
+    <>
+      <h1 className="text-3xl pt-20 text-center font-bold">Login</h1>
+      <form className="flex justify-center items-center px-10 py-14 w-1/2 mx-auto shadow-lg flex-col">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          className="border border-gray-300 p-2 w-80 rounded mt-4"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border border-gray-300 p-2 w-80 rounded mt-4"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 w-80 rounded mt-4"
+        >
+          Login
+        </button>
+        <p className="mt-10">Not Registered?</p>
       </form>
-
-      <button className="px-5 py-1.5 mt-8  text-sm bg-red-500 rounded text-white">
-        Sign In Using Google
-      </button>
-
-      <button
-        onClick={handleSignUp}
-        className="px-5 py-1.5 ml-5 mt-8  text-sm bg-slate-900 rounded-full text-white"
-      >
-        Sign Up
-      </button>
-
-      {error && <p className="text-red-500 text-center">{error}</p>}
-    </div>
+      <div className="flex justify-center text-center items-center mt-5">
+        <button
+          onClick={redirectSignUp}
+          className="mr-3 text-blue-500 font-semibold"
+        >
+          Signup
+        </button>
+        <p className="mr-3">OR</p>
+        <button className="bg-red-500 p-2 text-white rounded">
+          Login Using Google
+        </button>
+      </div>
+    </>
   );
-};
+}
 
 export default Login;
