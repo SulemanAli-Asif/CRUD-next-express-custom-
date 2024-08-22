@@ -1,51 +1,79 @@
 "use client";
-
-import React from "react";
-import ItemsTable from "./ItemsTable";
 import useSWR from "swr";
+import { useState } from "react";
+import ItemsTable from "./ItemsTable";
 
-async function fetcher(url: string) {
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+const fetcher = async (url: string) =>
+  await fetch(url).then((res) => res.json());
+
+function ItemsList() {
+  const { data, error, isLoading } = useSWR("/server/items", fetcher, {
+    refreshInterval: 1000,
   });
-  const data = await response.json();
-  return data;
-}
 
-function Dashboard() {
-  const [searchText, setSearchText] = React.useState("");
-  const { data, error, isLoading } = useSWR("/server/items", fetcher);
+  const [searchText, setSearchText] = useState("");
 
-  if (error) return <div>Failed to load data: {error.message}</div>;
+  // Filter items based on searchText
+  const filteredItems = data?.filter((item: { name: string }) =>
+    item.name.toLowerCase().includes(searchText.toLowerCase())
+  );
+  console.log("data: ", filteredItems);
+
+  function handleAdd() {
+    window.location.href = "/add";
+  }
+  async function handleDelete(id: number) {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this item?"
+    );
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(`/server/delete/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete item");
+      }
+
+      const data = await response.json();
+      console.log("Item deleted successfully:", data);
+      alert("Item deleted successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  }
+
   if (isLoading) return <div>Loading...</div>;
-
-  console.log("Data:", data); // Debugging: Log data
-
-  // Ensure the data is an array before filtering
-  // const filtered = data?.items.filter((item) => {
-
-  // });
-
-  // console.log("Filtered data:", filtered); // Debugging: Log filtered data
+  if (error) return <div>Failed to load items</div>;
 
   return (
-    <div className="mx-40 items-center text-center my-20">
-      <h1 className="text-2xl text-center font-bold">Items</h1>
+    <div className="text-center items-center mx-40 my-20 min-w-md">
+      <h1 className="text-2xl font-bold">Items</h1>
+      <div>
+        <button
+          onClick={handleAdd}
+          className="bg-blue-500 p-2 m-2 text-white rounded"
+        >
+          +ADD
+        </button>
+        <input
+          type="text"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Search"
+          className="border border-gray-300 p-2 w-80 rounded mt-4"
+        />
+      </div>
 
-      <button className="my-4 bg-blue-500 p-1 rounded text-white">+ADD</button>
-      <input
-        type="text"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        className="border border-gray-300 p-1 rounded mx-2"
-        placeholder="Search"
-      />
-      <ItemsTable data={data.items} />
+      {searchText && filteredItems?.length === 0 ? (
+        <div className="mt-4 text-red-500">Not found</div>
+      ) : (
+        <ItemsTable data={filteredItems} handleDelete={handleDelete} />
+      )}
     </div>
   );
 }
 
-export default Dashboard;
+export default ItemsList;

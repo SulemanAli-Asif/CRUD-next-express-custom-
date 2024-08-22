@@ -77,16 +77,15 @@ export async function googleLogin(req: Request, res: Response) {
 }
 
 export async function addItem(req: Request, res: Response) {
-  const { name, price, userId } = req.body;
+  const { name, price } = req.body;
 
-  console.log("Request data: ", { name, price, userId });
+  console.log("Request data: ", { name, price });
 
   try {
     await prisma.item.create({
       data: {
         name,
         price: parseFloat(price),
-        userId,
       },
     });
     return res.status(201).json({ message: "Item added successfully" });
