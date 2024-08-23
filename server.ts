@@ -19,6 +19,9 @@ interface User {
   name?: string;
   image?: string;
 }
+import jwt from "jsonwebtoken";
+import { googleLogin } from "./controller/controller";
+
 const port = parseInt(process.env.PORT || "3000", 10);
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -45,6 +48,17 @@ server.use(passport.initialize());
 
 server.use("/server", router);
 server.use(cookieParser());
+
+server.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+// Handle Google callback
+server.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { session: false }),
+  googleLogin
+);
 
 server.get("/check", (req, res) => {
   res.send("Hello");

@@ -4,11 +4,14 @@ import {
   deleteItem,
   getItems,
   getSingleItem,
+  googleLogin,
   login,
   signup,
   updateItem,
 } from "../controller/controller";
 import Router from "express";
+import passport from "passport";
+import jwt from "jsonwebtoken";
 
 const router = Router();
 
@@ -23,4 +26,5 @@ router.put("/update/:id", updateItem);
 router.delete("/delete/:id", deleteItem);
 router.post("/login", login);
 router.post("/signup", signup);
+
 export default router;

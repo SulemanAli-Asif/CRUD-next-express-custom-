@@ -55,31 +55,34 @@ const login = (req, res, next) => {
 };
 exports.login = login;
 async function googleLogin(req, res) {
-    const { email, name } = req.body;
     try {
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
-            await prisma.user.create({
+        const user = req.user;
+        let existingUser = await prisma.user.findUnique({
+            where: { email: user.email },
+        });
+        if (!existingUser) {
+            existingUser = await prisma.user.create({
                 data: {
-                    name,
-                    email,
+                    name: user.name,
+                    email: user.email,
+                    googleId: user.id,
                 },
             });
-            return res.status(201).json({ message: "User created successfully" });
         }
-        return res.status(200).json({
-            id: user.id,
-            name: user.name,
-            email: user.email,
+        const token = jsonwebtoken_1.default.sign({ id: existingUser.id, email: existingUser.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        res.cookie("auth_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
         });
+        res.redirect("/");
     }
-    catch (err) {
-        return res.status(500).json({ message: "Internal Srever error" });
+    catch (error) {
+        console.error("Error during Google login:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 }
 async function addItem(req, res) {
     const { name, price } = req.body;
-    console.log("Request data: ", { name, price });
     try {
         await prisma.item.create({
             data: {
@@ -96,8 +99,6 @@ async function addItem(req, res) {
 }
 async function getItems(req, res) {
     try {
-        console.log("Request headers:", req.headers); // Log headers to ensure token is sent
-        console.log("Request user:", req.user); // Check if user is authenticated
         const products = await prisma.item.findMany();
         return res.status(200).json(products);
     }
@@ -131,7 +132,6 @@ async function getSingleItem(req, res) {
 async function updateItem(req, res) {
     const { id } = req.params;
     const { name, price, updatedAt } = req.body;
-    console.log("Request data: ", { name, price, updatedAt });
     try {
         await prisma.item.update({
             where: { id: parseInt(id) },

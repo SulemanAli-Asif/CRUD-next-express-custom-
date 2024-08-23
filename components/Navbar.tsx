@@ -3,15 +3,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 function Navbar() {
-  const [token, setToken] = useState<String>("");
+  const [token, setToken] = useState<String | null>(null);
 
   useEffect(() => {
-    const getToken = localStorage.getItem("token");
-    if (getToken) {
-      setToken(getToken);
-    } else {
-      setToken("");
-    }
+    const getCookie = (name: string): string | null => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+      return null;
+    };
+
+    const storedToken = getCookie("auth_token");
+    setToken(storedToken);
   }, []);
 
   function handleLogin() {
@@ -19,9 +22,12 @@ function Navbar() {
   }
 
   function handleLogout() {
-    localStorage.removeItem("token");
+    document.cookie =
+      "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
     window.location.href = "/login";
   }
+
   return (
     <nav className="flex items-center justify-between shadow py-4 px-20">
       <div>

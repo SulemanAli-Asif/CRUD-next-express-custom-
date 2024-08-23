@@ -43,35 +43,48 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
         expiresIn: "1h", // Token expires in 1 hour
       });
 
-      return res.json({ message: "Login successful", token });
+      res.cookie("auth_token", token, {
+        secure: process.env.NODE_ENV === "production",
+      });
+      res.redirect("/");
     }
   )(req, res, next);
 };
 
 export async function googleLogin(req: Request, res: Response) {
-  const { email, name } = req.body;
-
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      await prisma.user.create({
+    const user = req.user as any;
+
+    let existingUser = await prisma.user.findUnique({
+      where: { email: user.email },
+    });
+
+    if (!existingUser) {
+      existingUser = await prisma.user.create({
         data: {
-          name,
-          email,
+          name: user.name,
+          email: user.email,
+          googleId: user.id,
         },
       });
-      return res.status(201).json({ message: "User created successfully" });
     }
-    return res.status(200).json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
+
+    const token = jwt.sign(
+      { id: existingUser.id, email: existingUser.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1h" }
+    );
+
+    res.cookie("auth_token", token, {
+      secure: process.env.NODE_ENV === "production",
     });
-  } catch (err) {
-    return res.status(500).json({ message: "Internal Srever error" });
+
+    res.redirect("/");
+  } catch (error) {
+    console.error("Error during Google login:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }
-
 export async function addItem(req: Request, res: Response) {
   const { name, price } = req.body;
 

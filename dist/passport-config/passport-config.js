@@ -53,15 +53,20 @@ exports.googleStrategy = new passport_google_oauth20_1.Strategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "/auth/google/callback",
 }, async (accessToken, refreshToken, profile, done) => {
+    var _a, _b;
     try {
+        const email = (_b = (_a = profile.emails) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.value;
+        if (!email) {
+            return done(new Error("Email not found in profile"), false);
+        }
         let user = await prisma.user.findUnique({
-            where: { email: profile.id },
+            where: { email },
         });
         if (!user) {
             user = await prisma.user.create({
                 data: {
                     googleId: profile.id,
-                    email: profile.emails[0].value,
+                    email,
                     name: profile.displayName,
                 },
             });
@@ -69,6 +74,7 @@ exports.googleStrategy = new passport_google_oauth20_1.Strategy({
         return done(null, user);
     }
     catch (error) {
+        console.error("Error during Google authentication:", error);
         return done(error, false);
     }
 });

@@ -27,15 +27,22 @@ function Login() {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const getCookie = (name: string): string | null => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+      return null;
+    };
+
+    if (getCookie("auth_token")) {
       window.location.href = "/";
     }
   });
 
-  // function googleSignIn() {
-  //   signIn("google", { callbackUrl: "/" });
-  // }
+  const handleGoogleLogin = () => {
+    console.log("Google login");
+    window.location.href = "/auth/google";
+  };
 
   function redirectSignUp() {
     window.location.href = "/signup";
@@ -78,7 +85,10 @@ function Login() {
           Signup
         </button>
         <p className="mr-3">OR</p>
-        <button className="bg-red-500 p-2 text-white rounded">
+        <button
+          onClick={handleGoogleLogin}
+          className="bg-red-500 p-2 text-white rounded"
+        >
           Login Using Google
         </button>
       </div>

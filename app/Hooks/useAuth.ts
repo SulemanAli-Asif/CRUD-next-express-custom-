@@ -6,14 +6,14 @@ const fetcher = async (url: string, token: string) => {
   const response = await fetch(url, {
     method: "GET",
     headers: {
-      Authorization: ` Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
+    credentials: "include", // Ensure cookies are sent with the request
   });
   if (!response.ok) {
     throw new Error("An error occurred while fetching the data.");
   }
   const res = await response.json();
-  console.log(res);
   return res;
 };
 
@@ -22,28 +22,33 @@ export const useAuth = (URL: string) => {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift();
+    };
+
+    const storedToken = getCookie("auth_token");
+    console.log(storedToken);
     if (storedToken) {
       setToken(storedToken);
     } else {
       router.push("/login");
     }
-  }, [router, token]);
+  }, [router]);
 
   const { data, error } = useSWR(
     token ? [URL, token] : null,
-    ([url, token]) => {
-      return fetcher(url, token);
-    },
+    ([url, token]) => fetcher(url, token),
     {
       onError: () => router.push("/login"),
+      revalidateIfStale: false,
     }
   );
 
   if (error) {
     router.push("/login");
   }
-  console.log(data);
-
+  console.log("data:, ", data);
   return { data, isLoading: !data && !error, error };
 };

@@ -25,7 +25,7 @@ const Login = () => {
             placeholder="Enter your Name"
             required
             value={name}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             className="p-2  bg-white rounded-lg border border-gray-400 ml-10"
           />
         </label>

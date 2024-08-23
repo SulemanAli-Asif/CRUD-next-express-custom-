@@ -53,7 +53,6 @@ export const jwtStrategy = new JwtStrategy(
 );
 
 // Google OAuth Strategy
-
 export const googleStrategy = new GoogleStrategy(
   {
     clientID: process.env.GOOGLE_CLIENT_ID!,
@@ -62,15 +61,20 @@ export const googleStrategy = new GoogleStrategy(
   },
   async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
+      const email = profile.emails?.[0]?.value;
+      if (!email) {
+        return done(new Error("Email not found in profile"), false);
+      }
+
       let user = await prisma.user.findUnique({
-        where: { email: profile.id },
+        where: { email },
       });
 
       if (!user) {
         user = await prisma.user.create({
           data: {
             googleId: profile.id,
-            email: profile.emails[0].value,
+            email,
             name: profile.displayName,
           },
         });
@@ -78,6 +82,7 @@ export const googleStrategy = new GoogleStrategy(
 
       return done(null, user);
     } catch (error) {
+      console.error("Error during Google authentication:", error);
       return done(error, false);
     }
   }

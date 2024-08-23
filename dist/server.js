@@ -13,6 +13,7 @@ const client_1 = require("@prisma/client");
 const passport_config_1 = require("./passport-config/passport-config");
 const authenticated_1 = require("./middleware/authenticated");
 const prisma = new client_1.PrismaClient();
+const controller_1 = require("./controller/controller");
 const port = parseInt(process.env.PORT || "3000", 10);
 const dev = process.env.NODE_ENV !== "production";
 const app = (0, next_1.default)({ dev });
@@ -33,6 +34,9 @@ server.use(express_1.default.urlencoded({ extended: true }));
 server.use(passport_1.default.initialize());
 server.use("/server", routes_1.default);
 server.use((0, cookie_parser_1.default)());
+server.get("/auth/google", passport_1.default.authenticate("google", { scope: ["profile", "email"] }));
+// Handle Google callback
+server.get("/auth/google/callback", passport_1.default.authenticate("google", { session: false }), controller_1.googleLogin);
 server.get("/check", (req, res) => {
     res.send("Hello");
 });
@@ -45,7 +49,6 @@ routes_1.default.get("/profile", authenticated_1.authenticate, async (req, res) 
 });
 server.all("*", (req, res) => {
     const parsedUrl = (0, url_1.parse)(req.url, true);
-    // console.log("API route hit:", req.path);
     handle(req, res, parsedUrl);
 });
 app.prepare().then(() => {

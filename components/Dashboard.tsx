@@ -9,6 +9,7 @@ const fetcher = async (url: string) =>
 
 function ItemsList() {
   const { data, error, isLoading } = useAuth("/server/items");
+  console.log("data", data);
   const [token, setToken] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
 
@@ -43,14 +44,14 @@ function ItemsList() {
     }
   }
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-    } else {
-      window.location.href = "/login";
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedToken = localStorage.getItem("token");
+  //   if (storedToken) {
+  //     setToken(storedToken);
+  //   } else {
+  //     window.location.href = "/login";
+  //   }
+  // }, []);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Failed to load items</div>;

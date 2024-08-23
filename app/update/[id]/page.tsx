@@ -1,10 +1,13 @@
+import ProtectedLayout from "@/components/ProtectedLayout";
 import UpdateForm from "@/components/UpdateForm";
 import React from "react";
 
 function Update() {
   return (
     <div>
-      <UpdateForm />
+      <ProtectedLayout>
+        <UpdateForm />
+      </ProtectedLayout>
     </div>
   );
 }
