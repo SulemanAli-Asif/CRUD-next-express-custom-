@@ -3,17 +3,9 @@ import next from "next";
 import express from "express";
 import router from "./routes/routes";
 import cookieParser from "cookie-parser";
-import passport from "passport";
 import { PrismaClient } from "@prisma/client";
-import {
-  googleStrategy,
-  localStrategy,
-  jwtStrategy,
-} from "./passport-config/passport-config";
-import { authenticate } from "./middleware/authenticated";
-const prisma = new PrismaClient();
 
-import { googleLogin } from "./controller/controller";
+const prisma = new PrismaClient();
 
 const port = parseInt(process.env.PORT || "3000", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -22,41 +14,17 @@ const handle = app.getRequestHandler();
 
 const server = express();
 
-passport.use(localStrategy);
-passport.use(jwtStrategy);
-passport.use(googleStrategy);
-passport.serializeUser((user: any, done: any) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id: number, done: any) => {
-  const user = await prisma.user.findUnique({ where: { id } });
-  done(null, user);
-});
-
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
-server.use(passport.initialize());
-
 server.use("/server", router);
 server.use(cookieParser());
-
-server.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-server.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { session: false }),
-  googleLogin
-);
 
 server.get("/check", (req, res) => {
   res.send("Hello");
 });
 
-router.get("/profile", authenticate, async (req: any, res: any) => {
+router.get("/profile", async (req: any, res: any) => {
   const user = await prisma.user.findUnique({ where: { id: req.user?.id } });
   if (!user) return res.sendStatus(404); // User not found
   res.json(user);

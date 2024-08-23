@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
-import passport from "passport";
 const prisma = new PrismaClient();
 import { NextFunction } from "express";
 import jwt from "jsonwebtoken";
@@ -30,61 +29,6 @@ export async function signup(req: Request, res: Response) {
   }
 }
 
-export const login = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate(
-    "local",
-    { session: false },
-    (err: any, user: any, info: any) => {
-      if (err) return next(err);
-      if (!user) return res.status(400).json({ message: info.message });
-
-      const payload = { id: user.id, email: user.email };
-      const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-        expiresIn: "1h", // Token expires in 1 hour
-      });
-
-      res.cookie("auth_token", token, {
-        secure: process.env.NODE_ENV === "production",
-      });
-      res.redirect("/");
-    }
-  )(req, res, next);
-};
-
-export async function googleLogin(req: Request, res: Response) {
-  try {
-    const user = req.user as any;
-
-    let existingUser = await prisma.user.findUnique({
-      where: { email: user.email },
-    });
-
-    if (!existingUser) {
-      existingUser = await prisma.user.create({
-        data: {
-          name: user.name,
-          email: user.email,
-          googleId: user.id,
-        },
-      });
-    }
-
-    const token = jwt.sign(
-      { id: existingUser.id, email: existingUser.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: "1h" }
-    );
-
-    res.cookie("auth_token", token, {
-      secure: process.env.NODE_ENV === "production",
-    });
-
-    res.redirect("/");
-  } catch (error) {
-    console.error("Error during Google login:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
 export async function addItem(req: Request, res: Response) {
   const { name, price } = req.body;
 
