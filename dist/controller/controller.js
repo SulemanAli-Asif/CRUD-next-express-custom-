@@ -50,7 +50,10 @@ const login = (req, res, next) => {
         const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
             expiresIn: "1h", // Token expires in 1 hour
         });
-        return res.json({ message: "Login successful", token });
+        res.cookie("auth_token", token, {
+            secure: process.env.NODE_ENV === "production",
+        });
+        res.redirect("/");
     })(req, res, next);
 };
 exports.login = login;
@@ -71,7 +74,6 @@ async function googleLogin(req, res) {
         }
         const token = jsonwebtoken_1.default.sign({ id: existingUser.id, email: existingUser.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
         res.cookie("auth_token", token, {
-            httpOnly: true,
             secure: process.env.NODE_ENV === "production",
         });
         res.redirect("/");

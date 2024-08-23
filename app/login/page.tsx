@@ -40,7 +40,6 @@ function Login() {
   });
 
   const handleGoogleLogin = () => {
-    console.log("Google login");
     window.location.href = "/auth/google";
   };
 

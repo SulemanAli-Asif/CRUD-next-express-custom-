@@ -9,72 +9,83 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleSignUp = () => {
-    router.push("/signup");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const res = await fetch("/server/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      alert(data.message);
+    }
+    window.location.href = "/login";
+    console.log("redirecting to login page");
+  };
+
+  const handleLogin = () => {
+    router.push("/login");
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "/auth/google";
   };
 
   return (
-    <div className="mt-20 text-center ">
-      <h1 className="text-2xl text-center">Sign Up</h1>
-
-      <form className="mt-10 pt-10 w-1/2 mx-auto text-center border shadow flex flex-col gap-7">
-        <label>
-          <span>Name</span>
-          <input
-            type="name"
-            placeholder="Enter your Name"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="p-2  bg-white rounded-lg border border-gray-400 ml-10"
-          />
-        </label>
-        <label>
-          <span>Email</span>
-          <input
-            type="email"
-            placeholder="Enter your Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="p-2  bg-white rounded-lg border border-gray-400 ml-10"
-          />
-        </label>
-        <label>
-          <span className="pr-2">Password</span>
-          <input
-            type="password"
-            placeholder="Enter your Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="p-2 bg-white rounded-lg border border-gray-400"
-          />
-        </label>
-
-        <div className="flex-end mx-3 mb-5 gap-4">
-          <button
-            className="px-5 py-1.5 text-sm bg-primary-orange rounded bg-blue-500 text-white"
-            type="submit"
-          >
-            Sign Up
-          </button>
-        </div>
-      </form>
-
-      <button className="px-5 py-1.5 mt-8  text-sm bg-red-500 rounded text-white">
-        Sign In Using Google
-      </button>
-
-      <button
-        onClick={handleSignUp}
-        className="px-5 py-1.5 ml-5 mt-8  text-sm bg-blue-500 rounded text-white"
+    <>
+      <h1 className="text-3xl pt-20 text-center font-bold">SignUp</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="flex justify-center items-center px-10 py-14 w-1/2 mx-auto shadow-lg flex-col"
       >
-        Login
-      </button>
-
-      {error && <p className="text-red-500 text-center">{error}</p>}
-    </div>
+        <input
+          type="name"
+          placeholder="Name"
+          value={name}
+          className="border border-gray-300 p-2 w-80 rounded mt-4"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          className="border border-gray-300 p-2 w-80 rounded mt-4"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border border-gray-300 p-2 w-80 rounded mt-4"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 w-40 rounded mt-4"
+        >
+          Sign up
+        </button>
+        <p className="mt-10">Already Registered?</p>
+      </form>
+      <div className="flex justify-center text-center items-center mt-5">
+        <button
+          onClick={handleLogin}
+          className="mr-3 text-blue-500 font-semibold"
+        >
+          Login
+        </button>
+        <p className="mr-3">OR</p>
+        <button
+          onClick={handleGoogleLogin}
+          className="bg-red-500 p-2 text-white rounded"
+        >
+          Login Using Google
+        </button>
+      </div>
+    </>
   );
 };
 
