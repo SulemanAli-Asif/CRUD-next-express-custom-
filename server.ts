@@ -26,7 +26,7 @@ server.get("/check", (req, res) => {
 
 router.get("/profile", async (req: any, res: any) => {
   const user = await prisma.user.findUnique({ where: { id: req.user?.id } });
-  if (!user) return res.sendStatus(404); // User not found
+  if (!user) return res.sendStatus(404);
   res.json(user);
 });
 
