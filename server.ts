@@ -58,7 +58,6 @@ router.get("/profile", authenticate, async (req: any, res: any) => {
 
 server.all("*", (req, res) => {
   const parsedUrl = parse(req.url, true);
-  // console.log("API route hit:", req.path);
   handle(req, res, parsedUrl);
 });
 

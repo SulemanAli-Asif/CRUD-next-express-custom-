@@ -75,8 +75,6 @@ export async function googleLogin(req: Request, res: Response) {
 export async function addItem(req: Request, res: Response) {
   const { name, price } = req.body;
 
-  console.log("Request data: ", { name, price });
-
   try {
     await prisma.item.create({
       data: {
@@ -129,7 +127,6 @@ export async function updateItem(req: Request, res: Response) {
   const { id } = req.params;
   const { name, price, updatedAt } = req.body;
 
-  console.log("Request data: ", { name, price, updatedAt });
   try {
     await prisma.item.update({
       where: { id: parseInt(id) },

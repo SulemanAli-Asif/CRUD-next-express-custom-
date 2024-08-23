@@ -15,7 +15,6 @@ function UpdateForm() {
   const router = useRouter();
   const searchParams = useParams();
   const id = searchParams.id;
-  console.log("id: ", id);
 
   const { data, error } = useSWR(`/server/items/${id}`, fetcher);
 
@@ -52,7 +51,6 @@ function UpdateForm() {
       }
 
       const data = await response.json();
-      console.log("Product updated successfully:", data);
       alert("Product updated successfully");
       router.push("/");
     } catch (error) {
