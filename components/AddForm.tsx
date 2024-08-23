@@ -24,9 +24,9 @@ function AddForm() {
       }
 
       const data = await response.json();
-      console.log("Product added successfully:", data);
       alert("Product added successfully");
       router.push("/");
+      return data;
     } catch (error) {
       console.error("Error adding product:", error);
     }

@@ -1,28 +1,37 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // function handleLogin(e: React.FormEvent<HTMLFormElement>) {
-  //   e.preventDefault();
-  //   fetch("/server/login", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ email, password }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.message === "Login successful") {
-  //         window.location.href = "/";
-  //       } else {
-  //         alert(data.message);
-  //       }
-  //     });
-  // }
+  function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    fetch("/server/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.message === "Login successful") {
+          localStorage.setItem("token", data.token);
+          window.location.href = "/";
+        } else {
+          alert(data.message);
+        }
+      });
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      window.location.href = "/";
+    }
+  });
 
   // function googleSignIn() {
   //   signIn("google", { callbackUrl: "/" });
@@ -35,7 +44,10 @@ function Login() {
   return (
     <>
       <h1 className="text-3xl pt-20 text-center font-bold">Login</h1>
-      <form className="flex justify-center items-center px-10 py-14 w-1/2 mx-auto shadow-lg flex-col">
+      <form
+        onSubmit={handleLogin}
+        className="flex justify-center items-center px-10 py-14 w-1/2 mx-auto shadow-lg flex-col"
+      >
         <input
           type="email"
           placeholder="Email"

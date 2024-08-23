@@ -11,6 +11,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const passport_1 = __importDefault(require("passport"));
 const client_1 = require("@prisma/client");
 const passport_config_1 = require("./passport-config/passport-config");
+const authenticated_1 = require("./middleware/authenticated");
 const prisma = new client_1.PrismaClient();
 const port = parseInt(process.env.PORT || "3000", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -35,9 +36,16 @@ server.use((0, cookie_parser_1.default)());
 server.get("/check", (req, res) => {
     res.send("Hello");
 });
+routes_1.default.get("/profile", authenticated_1.authenticate, async (req, res) => {
+    var _a;
+    const user = await prisma.user.findUnique({ where: { id: (_a = req.user) === null || _a === void 0 ? void 0 : _a.id } });
+    if (!user)
+        return res.sendStatus(404); // User not found
+    res.json(user);
+});
 server.all("*", (req, res) => {
     const parsedUrl = (0, url_1.parse)(req.url, true);
-    console.log("API route hit:", req.path);
+    // console.log("API route hit:", req.path);
     handle(req, res, parsedUrl);
 });
 app.prepare().then(() => {

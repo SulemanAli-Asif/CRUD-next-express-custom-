@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
-
+import passport from "passport";
 const prisma = new PrismaClient();
+import { NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
 export async function signup(req: Request, res: Response) {
   const { name, email, password } = req.body;
@@ -28,29 +30,23 @@ export async function signup(req: Request, res: Response) {
   }
 }
 
-export async function login(req: Request, res: Response) {
-  const { email, password } = req.body;
-  try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (user) {
-      const isPasswordValid = bcrypt.compareSync(
-        password,
-        user?.password || ""
-      );
-      if (isPasswordValid) {
-        return res.status(200).json({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        });
-      } else {
-        return res.status(400).json({ message: "Invalid email or password" });
-      }
+export const login = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate(
+    "local",
+    { session: false },
+    (err: any, user: any, info: any) => {
+      if (err) return next(err);
+      if (!user) return res.status(400).json({ message: info.message });
+
+      const payload = { id: user.id, email: user.email };
+      const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+        expiresIn: "1h", // Token expires in 1 hour
+      });
+
+      return res.json({ message: "Login successful", token });
     }
-  } catch (err) {
-    return res.status(400).json({ message: "Invalid email or password" });
-  }
-}
+  )(req, res, next);
+};
 
 export async function googleLogin(req: Request, res: Response) {
   const { email, name } = req.body;
@@ -100,6 +96,7 @@ export async function getItems(req: Request, res: Response) {
     const products = await prisma.item.findMany();
     return res.status(200).json(products);
   } catch (err) {
+    console.error("Error fetching items:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 }

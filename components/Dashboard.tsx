@@ -1,23 +1,21 @@
 "use client";
 import useSWR from "swr";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ItemsTable from "./ItemsTable";
+import { useAuth } from "@/app/Hooks/useAuth";
 
 const fetcher = async (url: string) =>
   await fetch(url).then((res) => res.json());
 
 function ItemsList() {
-  const { data, error, isLoading } = useSWR("/server/items", fetcher, {
-    refreshInterval: 1000,
-  });
-
+  const { data, error, isLoading } = useAuth("/server/items");
+  const [token, setToken] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
 
   // Filter items based on searchText
   const filteredItems = data?.filter((item: { name: string }) =>
     item.name.toLowerCase().includes(searchText.toLowerCase())
   );
-  console.log("data: ", filteredItems);
 
   function handleAdd() {
     window.location.href = "/add";
@@ -37,13 +35,22 @@ function ItemsList() {
       }
 
       const data = await response.json();
-      console.log("Item deleted successfully:", data);
       alert("Item deleted successfully");
       window.location.reload();
+      return data;
     } catch (error) {
       console.error("Error deleting item:", error);
     }
   }
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    } else {
+      window.location.href = "/login";
+    }
+  }, []);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Failed to load items</div>;

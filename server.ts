@@ -1,6 +1,6 @@
 import { parse } from "url";
 import next from "next";
-import express from "express";
+import express, { Request, Response } from "express";
 import router from "./routes/routes";
 import cookieParser from "cookie-parser";
 import passport from "passport";
@@ -10,7 +10,7 @@ import {
   localStrategy,
   jwtStrategy,
 } from "./passport-config/passport-config";
-
+import { authenticate } from "./middleware/authenticated";
 const prisma = new PrismaClient();
 
 interface User {
@@ -50,9 +50,15 @@ server.get("/check", (req, res) => {
   res.send("Hello");
 });
 
+router.get("/profile", authenticate, async (req: any, res: any) => {
+  const user = await prisma.user.findUnique({ where: { id: req.user?.id } });
+  if (!user) return res.sendStatus(404); // User not found
+  res.json(user);
+});
+
 server.all("*", (req, res) => {
   const parsedUrl = parse(req.url, true);
-  console.log("API route hit:", req.path);
+  // console.log("API route hit:", req.path);
   handle(req, res, parsedUrl);
 });
 

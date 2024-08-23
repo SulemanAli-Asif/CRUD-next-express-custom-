@@ -11,7 +11,6 @@ const passport_google_oauth20_1 = require("passport-google-oauth20");
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const prisma = new client_1.PrismaClient();
-// Local Strategy
 exports.localStrategy = new passport_local_1.Strategy({ usernameField: "email" }, async (email, password, done) => {
     try {
         const user = await prisma.user.findUnique({

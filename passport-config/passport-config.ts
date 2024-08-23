@@ -7,7 +7,6 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-// Local Strategy
 export const localStrategy = new LocalStrategy(
   { usernameField: "email" },
   async (email: string, password: string, done: any) => {
