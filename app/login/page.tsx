@@ -16,7 +16,6 @@ function Login() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data.message === "Login successful") {
           localStorage.setItem("token", data.token);
           window.location.href = "/";

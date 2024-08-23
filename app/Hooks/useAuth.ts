@@ -39,8 +39,6 @@ export const useAuth = (URL: string) => {
     revalidateIfStale: false,
   });
 
-  console.log("SWR data: ", data);
-
   if (error) {
     router.push("/login");
   }
