@@ -34,7 +34,7 @@ export const useAuth = (URL: string) => {
   //   }
   // }, [router]);
 
-  const { data, error } = useSWR([URL], (url) => fetcher(url), {
+  const { data, error } = useSWR(URL, (url) => fetcher(url), {
     onError: () => router.push("/login"),
     revalidateIfStale: false,
   });
