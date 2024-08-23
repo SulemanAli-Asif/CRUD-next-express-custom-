@@ -29,7 +29,6 @@ export const useAuth = (URL: string) => {
     };
 
     const storedToken = getCookie("auth_token");
-    console.log(storedToken);
     if (storedToken) {
       setToken(storedToken);
     } else {
@@ -49,6 +48,5 @@ export const useAuth = (URL: string) => {
   if (error) {
     router.push("/login");
   }
-  console.log("data:, ", data);
   return { data, isLoading: !data && !error, error };
 };
