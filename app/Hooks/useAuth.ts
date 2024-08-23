@@ -8,7 +8,7 @@ const fetcher = async (url: string, token: string) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    credentials: "include", // Ensure cookies are sent with the request
+    credentials: "include",
   });
   if (!response.ok) {
     throw new Error("An error occurred while fetching the data.");

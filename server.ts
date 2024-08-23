@@ -1,6 +1,6 @@
 import { parse } from "url";
 import next from "next";
-import express, { Request, Response } from "express";
+import express from "express";
 import router from "./routes/routes";
 import cookieParser from "cookie-parser";
 import passport from "passport";
@@ -13,13 +13,6 @@ import {
 import { authenticate } from "./middleware/authenticated";
 const prisma = new PrismaClient();
 
-interface User {
-  id: string;
-  email: string;
-  name?: string;
-  image?: string;
-}
-import jwt from "jsonwebtoken";
 import { googleLogin } from "./controller/controller";
 
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -53,7 +46,6 @@ server.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-// Handle Google callback
 server.get(
   "/auth/google/callback",
   passport.authenticate("google", { session: false }),

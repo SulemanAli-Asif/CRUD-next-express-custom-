@@ -33,8 +33,6 @@ export const localStrategy = new LocalStrategy(
   }
 );
 
-// JWT Strategy
-
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET!,
@@ -52,7 +50,6 @@ export const jwtStrategy = new JwtStrategy(
   }
 );
 
-// Google OAuth Strategy
 export const googleStrategy = new GoogleStrategy(
   {
     clientID: process.env.GOOGLE_CLIENT_ID!,

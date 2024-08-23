@@ -1,6 +1,5 @@
 "use client";
-import useSWR from "swr";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ItemsTable from "./ItemsTable";
 import { useAuth } from "@/app/Hooks/useAuth";
 
@@ -13,7 +12,6 @@ function ItemsList() {
   const [token, setToken] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
 
-  // Filter items based on searchText
   const filteredItems = data?.filter((item: { name: string }) =>
     item.name.toLowerCase().includes(searchText.toLowerCase())
   );
@@ -43,15 +41,6 @@ function ItemsList() {
       console.error("Error deleting item:", error);
     }
   }
-
-  // useEffect(() => {
-  //   const storedToken = localStorage.getItem("token");
-  //   if (storedToken) {
-  //     setToken(storedToken);
-  //   } else {
-  //     window.location.href = "/login";
-  //   }
-  // }, []);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Failed to load items</div>;

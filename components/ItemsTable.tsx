@@ -2,7 +2,7 @@ import React from "react";
 import { Item } from "@prisma/client";
 
 type ItemsTableProps = {
-  data: Item[]; // data is an array of Item objects
+  data: Item[];
   handleDelete: (id: number) => Promise<void>;
 };
 
