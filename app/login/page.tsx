@@ -16,9 +16,7 @@ function Login() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data.message === "Login successful") {
-          localStorage.setItem("token", data.token);
           window.location.href = "/";
         } else {
           alert(data.message);
@@ -37,7 +35,7 @@ function Login() {
     if (getCookie("auth_token")) {
       window.location.href = "/";
     }
-  });
+  }, []);
 
   const handleGoogleLogin = () => {
     window.location.href = "/auth/google";

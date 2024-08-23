@@ -22,7 +22,6 @@ const Login = () => {
       alert(data.message);
     }
     window.location.href = "/login";
-    console.log("redirecting to login page");
   };
 
   const handleLogin = () => {

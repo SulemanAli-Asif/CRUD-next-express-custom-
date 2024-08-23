@@ -46,7 +46,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       res.cookie("auth_token", token, {
         secure: process.env.NODE_ENV === "production",
       });
-      res.redirect("/");
+      res.status(200).json({ message: "Login successful" });
     }
   )(req, res, next);
 };

@@ -8,7 +8,6 @@ const fetcher = async (url: string) =>
 
 function ItemsList() {
   const { data, error, isLoading } = useAuth("/server/items");
-  console.log("data", data);
   const [token, setToken] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
 
