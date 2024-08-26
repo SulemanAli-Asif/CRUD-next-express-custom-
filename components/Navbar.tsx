@@ -1,37 +1,30 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import {
+  signIn,
+  signOut,
+  useSession,
+  getProviders,
+  LiteralUnion,
+  ClientSafeProvider,
+} from "next-auth/react";
 
 function Navbar() {
-  const [token, setToken] = useState<String | null>(null);
-
-  useEffect(() => {
-    const getCookie = (name: string): string | null => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
-      return null;
-    };
-
-    const storedToken = getCookie("auth_token");
-    setToken(storedToken);
-  }, []);
+  const { data: session, status } = useSession();
 
   function handleLogin() {
     window.location.href = "/login";
   }
 
   function handleLogout() {
-    document.cookie =
-      "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-
-    window.location.href = "/login";
+    signOut({ callbackUrl: "/login" });
   }
 
   return (
     <nav className="flex items-center justify-between shadow py-4 px-20">
       <div>
-        <h1 className=" text-xl font-bold">CRUD</h1>
+        <h1 className="text-xl font-bold">CRUD</h1>
       </div>
       <ul className="flex space-x-4">
         <li className="hover:text-gray-500 mt-2">
@@ -40,7 +33,7 @@ function Navbar() {
           </Link>
         </li>
         <li>
-          {token ? (
+          {status === "authenticated" ? (
             <button
               onClick={handleLogout}
               className="bg-blue-500 p-2 text-white rounded"

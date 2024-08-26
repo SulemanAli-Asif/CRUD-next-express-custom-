@@ -1,45 +1,36 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { BuiltInProviderType } from "next-auth/providers/index";
+import {
+  signIn,
+  signOut,
+  useSession,
+  getProviders,
+  LiteralUnion,
+  ClientSafeProvider,
+} from "next-auth/react";
 
 function Login() {
+  const session = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [providers, setProviders] = useState<Record<
+    LiteralUnion<BuiltInProviderType, string>,
+    ClientSafeProvider
+  > | null>(null);
 
   function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    fetch("/server/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.message === "Login successful") {
-          localStorage.setItem("token", data.token);
-          window.location.href = "/";
-        } else {
-          alert(data.message);
-        }
-      });
+    signIn("credentials", {
+      email,
+      password,
+      callbackUrl: "/",
+    });
   }
 
-  useEffect(() => {
-    const getCookie = (name: string): string | null => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
-      return null;
-    };
-
-    if (getCookie("auth_token")) {
-      window.location.href = "/";
-    }
-  });
-
-  const handleGoogleLogin = () => {
-    window.location.href = "/auth/google";
+  const handleGoogleSignin = async () => {
+    signIn("google", { callbackUrl: "/" });
   };
 
   function redirectSignUp() {
@@ -84,7 +75,7 @@ function Login() {
         </button>
         <p className="mr-3">OR</p>
         <button
-          onClick={handleGoogleLogin}
+          onClick={handleGoogleSignin}
           className="bg-red-500 p-2 text-white rounded"
         >
           Login Using Google
