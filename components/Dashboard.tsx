@@ -2,14 +2,14 @@
 import { useState } from "react";
 import ItemsTable from "./ItemsTable";
 import { useAuth } from "@/app/Hooks/useAuth";
-
-const fetcher = async (url: string) =>
-  await fetch(url).then((res) => res.json());
+import { useEffect } from "react";
+import Cookies from "js-cookie";
 
 function ItemsList() {
-  const { data, error, isLoading } = useAuth("/api/items");
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string>("");
   const [searchText, setSearchText] = useState("");
+  const { data, error, isLoading } = useAuth("/api/items");
+  console.log("data: ", data);
 
   const filteredItems = data?.filter((item: { name: string }) =>
     item.name.toLowerCase().includes(searchText.toLowerCase())
@@ -40,6 +40,11 @@ function ItemsList() {
       console.error("Error deleting item:", error);
     }
   }
+
+  useEffect(() => {
+    const tokenFromCookie = Cookies.get("next-auth.session-token");
+    setToken(tokenFromCookie || "");
+  }, []);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Failed to load items</div>;

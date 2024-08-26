@@ -9,7 +9,6 @@ const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes/routes"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const client_1 = require("@prisma/client");
-// import handler from "./app/api/auth/[...nextauth]/route";
 const prisma = new client_1.PrismaClient();
 const port = parseInt(process.env.PORT || "3000", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -20,21 +19,6 @@ server.use(express_1.default.json());
 server.use(express_1.default.urlencoded({ extended: true }));
 server.use("/api", routes_1.default);
 server.use((0, cookie_parser_1.default)());
-// server.get("/api/check", (_req, res) => {
-//   res.send("Hello");
-// });
-// server.use("/api/auth", (req, res) => {
-//   return handler(req, res);
-// });
-// server.use("/api/auth", async (req, res) => {
-//   return handle(req, res);
-// });
-// server.use("/providers", async (req, res) => {
-//   return handle(req, res);
-// });
-// server.use("/api/auth/signin", async (req, res) => {
-//   return handle(req, res);
-// });
 routes_1.default.get("/profile", async (req, res) => {
     var _a;
     const user = await prisma.user.findUnique({ where: { id: (_a = req.user) === null || _a === void 0 ? void 0 : _a.id } });

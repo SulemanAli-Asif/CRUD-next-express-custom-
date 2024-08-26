@@ -37,11 +37,11 @@ function Login() {
     window.location.href = "/signup";
   }
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      window.location.href = "/";
-    }
-  }, [status]);
+  // useEffect(() => {
+  //   if (status === "authenticated") {
+  //     window.location.href = "/";
+  //   }
+  // }, [status]);
 
   return (
     <>

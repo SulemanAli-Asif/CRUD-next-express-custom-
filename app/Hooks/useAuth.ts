@@ -19,21 +19,6 @@ const fetcher = async (url: string) => {
 export const useAuth = (URL: string) => {
   const router = useRouter();
 
-  // useEffect(() => {
-  //   const getCookie = (name: string) => {
-  //     const value = `; ${document.cookie}`;
-  //     const parts = value.split(`; ${name}=`);
-  //     if (parts.length === 2) return parts.pop()?.split(";").shift();
-  //   };
-
-  //   const storedToken = getCookie("auth_token");
-  //   if (storedToken) {
-  //     setToken(storedToken);
-  //   } else {
-  //     router.push("/login");
-  //   }
-  // }, [router]);
-
   const { data, error } = useSWR(URL, (url) => fetcher(url), {
     onError: () => router.push("/login"),
     revalidateIfStale: false,

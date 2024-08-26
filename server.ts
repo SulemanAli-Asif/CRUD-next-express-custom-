@@ -4,7 +4,6 @@ import express from "express";
 import router from "./routes/routes";
 import cookieParser from "cookie-parser";
 import { PrismaClient } from "@prisma/client";
-// import handler from "./app/api/auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -19,26 +18,6 @@ server.use(express.urlencoded({ extended: true }));
 
 server.use("/api", router);
 server.use(cookieParser());
-
-// server.get("/api/check", (_req, res) => {
-//   res.send("Hello");
-// });
-
-// server.use("/api/auth", (req, res) => {
-//   return handler(req, res);
-// });
-
-// server.use("/api/auth", async (req, res) => {
-//   return handle(req, res);
-// });
-
-// server.use("/providers", async (req, res) => {
-//   return handle(req, res);
-// });
-
-// server.use("/api/auth/signin", async (req, res) => {
-//   return handle(req, res);
-// });
 
 router.get("/profile", async (req: any, res: any) => {
   const user = await prisma.user.findUnique({ where: { id: req.user?.id } });

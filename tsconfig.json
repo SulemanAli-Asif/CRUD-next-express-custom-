@@ -2,7 +2,8 @@
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "types": ["./types/next-auth", "./types/types"],
+    "types": ["./types/next-auth", "./types/types.ts"],
+    "typeRoots": ["./node_modules/@types", "./types"],
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
