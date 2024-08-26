@@ -12,7 +12,7 @@ import {
 } from "next-auth/react";
 
 function Login() {
-  const session = useSession();
+  const { data: session, status } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [providers, setProviders] = useState<Record<
@@ -36,6 +36,12 @@ function Login() {
   function redirectSignUp() {
     window.location.href = "/signup";
   }
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      window.location.href = "/";
+    }
+  }, [status]);
 
   return (
     <>

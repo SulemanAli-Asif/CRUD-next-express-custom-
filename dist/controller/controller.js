@@ -3,9 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = void 0;
 exports.signup = signup;
-exports.googleLogin = googleLogin;
 exports.addItem = addItem;
 exports.getItems = getItems;
 exports.deleteItem = deleteItem;
@@ -13,9 +11,7 @@ exports.getSingleItem = getSingleItem;
 exports.updateItem = updateItem;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const client_1 = require("@prisma/client");
-const passport_1 = __importDefault(require("passport"));
 const prisma = new client_1.PrismaClient();
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 async function signup(req, res) {
     const { name, email, password } = req.body;
     try {
@@ -38,49 +34,6 @@ async function signup(req, res) {
     }
     catch (err) {
         res.status(500).send({ message: "Internal server error" });
-    }
-}
-const login = (req, res, next) => {
-    passport_1.default.authenticate("local", { session: false }, (err, user, info) => {
-        if (err)
-            return next(err);
-        if (!user)
-            return res.status(400).json({ message: info.message });
-        const payload = { id: user.id, email: user.email };
-        const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: "1h", // Token expires in 1 hour
-        });
-        res.cookie("auth_token", token, {
-            secure: process.env.NODE_ENV === "production",
-        });
-        res.redirect("/");
-    })(req, res, next);
-};
-exports.login = login;
-async function googleLogin(req, res) {
-    try {
-        const user = req.user;
-        let existingUser = await prisma.user.findUnique({
-            where: { email: user.email },
-        });
-        if (!existingUser) {
-            existingUser = await prisma.user.create({
-                data: {
-                    name: user.name,
-                    email: user.email,
-                    googleId: user.id,
-                },
-            });
-        }
-        const token = jsonwebtoken_1.default.sign({ id: existingUser.id, email: existingUser.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        res.cookie("auth_token", token, {
-            secure: process.env.NODE_ENV === "production",
-        });
-        res.redirect("/");
-    }
-    catch (error) {
-        console.error("Error during Google login:", error);
-        res.status(500).json({ message: "Internal Server Error" });
     }
 }
 async function addItem(req, res) {

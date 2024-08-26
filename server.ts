@@ -17,7 +17,7 @@ const server = express();
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
-server.use("/server", router);
+server.use("/api", router);
 server.use(cookieParser());
 
 // server.get("/api/check", (_req, res) => {
