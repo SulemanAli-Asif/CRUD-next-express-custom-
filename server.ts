@@ -34,17 +34,20 @@ const server = express();
 
 server.use(
   session({
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // ms
+    },
     secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
-    cookie: { secure: process.env.NODE_ENV === "production" },
   })
 );
 server.use(passport.initialize());
 
 passport.use(localStrategy);
 passport.use(googleStrategy);
+
 passport.serializeUser((user: any, done: any) => {
   done(null, user.id);
 });
@@ -58,6 +61,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
 server.use(passport.initialize());
+server.use(passport.session());
 
 server.use("/server", router);
 server.use(cookieParser());

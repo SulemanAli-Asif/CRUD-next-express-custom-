@@ -1,3 +1,13 @@
-import passport from "passport";
+import { Request, Response, NextFunction } from "express";
 
-export const authenticate = passport.authenticate("session", { session: true });
+export const authenticate = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("User authenticated: ", req.isAuthenticated());
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+};

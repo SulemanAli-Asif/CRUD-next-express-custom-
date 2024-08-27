@@ -1,32 +1,39 @@
 "use client";
+import { data } from "autoprefixer";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/app/Hooks/useAuth";
 
 function Navbar() {
-  const [token, setToken] = useState<String | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<String | null>(null);
+  const { data, error } = useAuth("/server/session");
+
+  console.log("data: ", data);
+
+  async function handleLogout() {
+    try {
+      await fetch("/server/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      // Redirect to login page after logout
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    }
+  }
 
   useEffect(() => {
-    const getCookie = (name: string): string | null => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
-      return null;
-    };
-
-    const storedToken = getCookie("auth_token");
-    setToken(storedToken);
-  }, []);
+    if (data) {
+      setIsLoggedIn(data.message);
+    }
+  }, [data]);
 
   function handleLogin() {
     window.location.href = "/login";
   }
-
-  function handleLogout() {
-    document.cookie =
-      "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-
-    window.location.href = "/login";
-  }
+  console.log(isLoggedIn);
 
   return (
     <nav className="flex items-center justify-between shadow py-4 px-20">
@@ -40,7 +47,7 @@ function Navbar() {
           </Link>
         </li>
         <li>
-          {token ? (
+          {isLoggedIn === "Authenticated" ? (
             <button
               onClick={handleLogout}
               className="bg-blue-500 p-2 text-white rounded"

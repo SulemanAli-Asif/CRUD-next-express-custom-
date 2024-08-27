@@ -4,7 +4,6 @@ import { PrismaClient } from "@prisma/client";
 import passport from "passport";
 const prisma = new PrismaClient();
 import { NextFunction } from "express";
-import jwt from "jsonwebtoken";
 
 export async function signup(req: Request, res: Response) {
   const { name, email, password } = req.body;
@@ -142,4 +141,21 @@ export async function updateItem(req: Request, res: Response) {
     console.error("Error updating item:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
+}
+
+export async function getSession(req: Request, res: Response) {
+  console.log(req.isAuthenticated());
+  if (req.isAuthenticated()) {
+    return res.status(200).json({ message: "Authenticated" });
+  }
+  return res.status(401).json({ message: "Unauthenticated" });
+}
+
+export function logOut(req: Request, res: Response, next: NextFunction) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/login");
+  });
 }
