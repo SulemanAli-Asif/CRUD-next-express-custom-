@@ -53,6 +53,9 @@ const handler = NextAuth({
   session: {
     strategy: "jwt",
   },
+  jwt: {
+    secret: process.env.JWT_SECRET!,
+  },
   callbacks: {
     async jwt({ token, user, account, profile }: any) {
       if (account?.provider === "google") {

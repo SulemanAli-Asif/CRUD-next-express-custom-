@@ -12,5 +12,11 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/update/:path*", "/add"],
+  matcher: [
+    "/",
+    "/update/:path*",
+    "/add",
+    "/api/items/:path*",
+    "/api/delete/:path*",
+  ],
 };
