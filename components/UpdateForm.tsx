@@ -16,7 +16,7 @@ function UpdateForm() {
   const searchParams = useParams();
   const id = searchParams.id;
 
-  const { data, error } = useSWR(`/server/items/${id}`, fetcher);
+  const { data, error } = useSWR(`/api/items/${id}`, fetcher);
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -33,7 +33,7 @@ function UpdateForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`/server/update/${id}`, {
+      const response = await fetch(`/api/update/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

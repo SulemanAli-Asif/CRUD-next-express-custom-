@@ -6,7 +6,7 @@ type ProtectedLayoutProps = {
 };
 
 function ProtectedLayout({ children }: ProtectedLayoutProps) {
-  const { data, error, isLoading } = useAuth("/server/profile");
+  const { data, error, isLoading } = useAuth("/api/profile");
 
   if (error) return <div>Failed to fetch the page</div>;
   return data ? <div>{children}</div> : <div>Loading...</div>;

@@ -7,7 +7,7 @@ const fetcher = async (url: string) =>
   await fetch(url).then((res) => res.json());
 
 function ItemsList() {
-  const { data, error, isLoading } = useAuth("/server/items");
+  const { data, error, isLoading } = useAuth("/api/items");
   const [token, setToken] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
 
@@ -24,7 +24,7 @@ function ItemsList() {
     );
     if (!confirmDelete) return;
     try {
-      const response = await fetch(`/server/delete/${id}`, {
+      const response = await fetch(`/api/delete/${id}`, {
         method: "DELETE",
       });
 
