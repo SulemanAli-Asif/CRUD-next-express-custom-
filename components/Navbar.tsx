@@ -6,11 +6,11 @@ import { useAuth } from "@/app/Hooks/useAuth";
 
 function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState<String | null>(null);
-  const { data, error } = useAuth("/server/session");
+  const { data, error } = useAuth("/api/session");
 
   async function handleLogout() {
     try {
-      await fetch("/server/logout", {
+      await fetch("/api/logout", {
         method: "POST",
         credentials: "include",
       });

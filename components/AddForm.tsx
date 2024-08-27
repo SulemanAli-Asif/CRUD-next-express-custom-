@@ -11,7 +11,7 @@ function AddForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/server/add", {
+      const response = await fetch("/api/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -60,7 +60,7 @@ server.use(express.urlencoded({ extended: true }));
 server.use(passport.initialize());
 server.use(passport.session());
 
-server.use("/server", router);
+server.use("/api", router);
 server.use(cookieParser());
 
 server.get(
