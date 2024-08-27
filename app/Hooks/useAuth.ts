@@ -34,7 +34,7 @@ export const useAuth = (URL: string) => {
     } else {
       router.push("/login");
     }
-  }, [router]);
+  }, [token, router]);
 
   const { data, error } = useSWR(
     token ? [URL, token] : null,
