@@ -31,24 +31,15 @@ export async function signup(req: Request, res: Response) {
 }
 
 export const login = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate(
-    "local",
-    { session: false },
-    (err: any, user: any, info: any) => {
+  passport.authenticate("local", (err: any, user: any, info: any) => {
+    if (err) return next(err);
+    if (!user) return res.status(400).json({ message: info.message });
+
+    req.logIn(user, (err) => {
       if (err) return next(err);
-      if (!user) return res.status(400).json({ message: info.message });
-
-      const payload = { id: user.id, email: user.email };
-      const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-        expiresIn: "1h", // Token expires in 1 hour
-      });
-
-      res.cookie("auth_token", token, {
-        secure: process.env.NODE_ENV === "production",
-      });
       res.status(200).json({ message: "Login successful" });
-    }
-  )(req, res, next);
+    });
+  })(req, res, next);
 };
 
 export async function googleLogin(req: Request, res: Response) {
@@ -69,17 +60,14 @@ export async function googleLogin(req: Request, res: Response) {
       });
     }
 
-    const token = jwt.sign(
-      { id: existingUser.id, email: existingUser.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: "1h" }
-    );
+    req.logIn(existingUser, (err) => {
+      if (err) {
+        console.error("Error during login:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
 
-    res.cookie("auth_token", token, {
-      secure: process.env.NODE_ENV === "production",
+      res.redirect("/");
     });
-
-    res.redirect("/");
   } catch (error) {
     console.error("Error during Google login:", error);
     res.status(500).json({ message: "Internal Server Error" });
