@@ -1,4 +1,4 @@
-import { authenticate } from "../middleware/authenticated";
+// import { authenticate } from "../middleware/authenticated";
 import {
   addItem,
   deleteItem,
@@ -17,7 +17,7 @@ router.get("/check", (req, res) => {
   res.send("Checking");
 });
 
-router.get("/items", authenticate, getItems);
+router.get("/items", getItems);
 router.post("/add", addItem);
 router.get("/items/:id", getSingleItem);
 router.put("/update/:id", updateItem);

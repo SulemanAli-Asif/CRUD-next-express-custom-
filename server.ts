@@ -5,15 +5,25 @@ import router from "./routes/routes";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import { PrismaClient } from "@prisma/client";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import {
   googleStrategy,
   localStrategy,
-  jwtStrategy,
 } from "./passport-config/passport-config";
 import { authenticate } from "./middleware/authenticated";
+import { Sequelize } from "sequelize";
+import SequelizeStore from "connect-session-sequelize";
+import session from "express-session";
+
 const prisma = new PrismaClient();
 
 import { googleLogin } from "./controller/controller";
+
+const sessionStore = new PrismaSessionStore(prisma, {
+  checkPeriod: 2 * 60 * 1000, //ms
+  dbRecordIdIsSessionId: true,
+  dbRecordIdFunction: undefined,
+});
 
 const port = parseInt(process.env.PORT || "3000", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -22,8 +32,18 @@ const handle = app.getRequestHandler();
 
 const server = express();
 
+server.use(
+  session({
+    secret: process.env.SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: { secure: process.env.NODE_ENV === "production" },
+  })
+);
+server.use(passport.initialize());
+
 passport.use(localStrategy);
-passport.use(jwtStrategy);
 passport.use(googleStrategy);
 passport.serializeUser((user: any, done: any) => {
   done(null, user.id);
