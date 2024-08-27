@@ -144,7 +144,6 @@ export async function updateItem(req: Request, res: Response) {
 }
 
 export async function getSession(req: Request, res: Response) {
-  console.log(req.isAuthenticated());
   if (req.isAuthenticated()) {
     return res.status(200).json({ message: "Authenticated" });
   }

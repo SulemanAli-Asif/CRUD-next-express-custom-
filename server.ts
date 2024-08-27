@@ -11,16 +11,13 @@ import {
   localStrategy,
 } from "./passport-config/passport-config";
 import { authenticate } from "./middleware/authenticated";
-import { Sequelize } from "sequelize";
-import SequelizeStore from "connect-session-sequelize";
 import session from "express-session";
 
 const prisma = new PrismaClient();
-
 import { googleLogin } from "./controller/controller";
 
-const sessionStore = new PrismaSessionStore(prisma, {
-  checkPeriod: 2 * 60 * 1000, //ms
+const sessionStore = new PrismaSessionStore(prisma as any, {
+  checkPeriod: 2 * 60 * 1000,
   dbRecordIdIsSessionId: true,
   dbRecordIdFunction: undefined,
 });

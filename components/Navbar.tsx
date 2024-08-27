@@ -8,8 +8,6 @@ function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState<String | null>(null);
   const { data, error } = useAuth("/server/session");
 
-  console.log("data: ", data);
-
   async function handleLogout() {
     try {
       await fetch("/server/logout", {
@@ -33,7 +31,6 @@ function Navbar() {
   function handleLogin() {
     window.location.href = "/login";
   }
-  console.log(isLoggedIn);
 
   return (
     <nav className="flex items-center justify-between shadow py-4 px-20">

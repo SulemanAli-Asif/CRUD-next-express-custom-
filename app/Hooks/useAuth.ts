@@ -22,8 +22,8 @@ export const useAuth = (URL: string) => {
     revalidateIfStale: false,
   });
 
-  if (error) {
-    router.push("/login");
+  if (data?.message === "Unauthorized") {
+    window.location.href = "/login";
   }
 
   return { data, isLoading: !data && !error, error };
