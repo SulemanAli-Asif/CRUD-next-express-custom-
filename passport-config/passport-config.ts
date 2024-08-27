@@ -1,5 +1,6 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
@@ -28,6 +29,23 @@ export const localStrategy = new LocalStrategy(
       return done(null, user);
     } catch (err) {
       return done(err);
+    }
+  }
+);
+
+const options = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET!,
+};
+
+export const jwtStrategy = new JwtStrategy(
+  options,
+  async (payload: any, done: any) => {
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    if (user) {
+      return done(null, user);
+    } else {
+      return done(null, false);
     }
   }
 );
