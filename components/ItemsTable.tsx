@@ -30,13 +30,13 @@ function ItemsTable({ data, handleDelete }: ItemsTableProps) {
                 <div className="flex justify-center items-center space-x-2">
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    className=" text-red-400 px-3 py-1 rounded hover:text-red-600"
                   >
                     Delete
                   </button>
                   <button
                     onClick={() => handleUpdate(item.id)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    className=" text-blue-400 px-3 py-1 rounded hover:text-blue-600"
                   >
                     Update
                   </button>
